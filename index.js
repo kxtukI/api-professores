@@ -1,15 +1,17 @@
 const express = require("express");
-
 const app = express();
-const port = 3000;
+
+require('dotenv').config();
 
 app.use(express.urlencoded({extended: false}));
-app.use(express.json);
+app.use(express.json());
 
-const routes = require("./routes/routes.js");
+const router = require("./routes/routes.js");
 
-app.use("/", routes);
+const PORT = process.env.PORT || 3000;
 
-app.listen(port, () => {
-    console.log("Iniciei na porta " + port);
-  });
+app.use("", router);
+
+app.listen(PORT, () => {
+    console.log("Iniciei na porta " + PORT);
+})

@@ -1,58 +1,77 @@
-const exec = require("../src/db.js");
+const pool = require("../src/db.js");
 const professoresController = {
-    showAll: async (req, res) => {
+    listarTodos: async (req, res) => {
         try {
-            const [rows, fields] = await exec.query("SELECT * FROM professores")
+            const [rows, fields] = await pool.query("SELECT * FROM professores");
             res.json({
                 data: rows
             })
         } catch (error) {
+            console.log(error)
             res.json({
                 status: "Erro!"
             })
         }
     },
-    selectById: async (req, res) => {
+    exibirMatricula: async (req, res) => {
         try {
-            const { matricula } = req.body
-            const [rows, fields] = await exec.query("SELECT * FROM professores WHERE matricula = ?" [matricula])
+            const { matricula } = req.params
+            const [rows, fields] = await pool.query("SELECT * from professores WHERE matricula = ?", [matricula])
             res.json({
                 data: rows
             })
         } catch (error) {
+            console.log(error)
             res.json({
                 status: "Erro!"
             })
         }
     },
-    insert: async (req, res) => {
+    criarProfessor: async (req, res) => {
         try {
-            const { nome, matricula, data_nascimento } = req.body
-            const [rows, fields] = await exec.query("INSERT INTO professores (nome, matricula, data_de_nascimento) VALUES (?, ?, ?)" [nome, matricula, data_nascimento])
+            const { nome, matricula, data_de_nascimento } = req.body
+            const sql = "INSERT into professores (nome, matricula, data_de_nascimento) values (?, ?, ?)"
+            const [rows, fields] = await pool.query(sql, [nome, matricula, data_de_nascimento])
             res.json({
-                data: rows,
                 status: "Professor inserido com Sucesso!"
             })
         } catch (error) {
+            console.log(error)
             res.json({
                 status: "Erro!"
             })
         }
     },
-    update: async (req, res) => {
+    atualizarProfessor: async (req, res) => {
         try {
-            const { nome, matricula, data_nascimento } = req.body
-            const [rows, fields] = await exec.query("INSERT INTO professores (nome, matricula, data_de_nascimento) VALUES (?, ?, ?)" [nome, matricula, data_nascimento])
+            const { matricula } = req.params
+            const { nome, data_de_nascimento } = req.body
+            const sql = "UPDATE professores SET nome = ?, data_de_nascimento = ? WHERE matricula = ?"
+            const [rows, fields] = await pool.query(sql, [nome, data_de_nascimento, matricula])
             res.json({
-                data: rows,
                 status: "Professor alterado com Sucesso!"
             })
         } catch (error) {
+            console.log(error)
             res.json({
-            status: "Erro!"
-        })
+                status: "Erro!"
+            })
         }
-    }
+    },
+    deletarProfessor: async (req, res) => {
+        try {
+            const { matricula } = req.params
+            const [rows, fields] = await pool.query("DELETE from professores WHERE matricula = ?", [matricula])
+            res.json({
+                status: "Professor excluído com Sucesso!"
+            })
+        } catch (error) {
+            console.log(error)
+            res.json({
+                status: "Erro!"
+            })
+        }
+    },
 }
 
 module.exports = professoresController;
